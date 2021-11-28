@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ReceivedMessageServer implements Runnable {
-    private Socket socket;
+    private final Socket socket;
     private final Map<String,String> calender;
     private final Set<Socket> setOfClients;
 
@@ -18,26 +18,32 @@ public class ReceivedMessageServer implements Runnable {
         this.setOfClients = setOfClients;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    private void getOrder(ObjectInputStream inputMsg, String order) throws IOException, ClassNotFoundException {
+        ObjectOutputStream outputMsg = new ObjectOutputStream(socket.getOutputStream());
+        Map<String, String> message = (Map<String, String>) inputMsg.readObject();
+        if(order.equals("ADD")){
+            calender.putAll(message);
+            outputMsg.writeObject("Added");
+        }
+        else if(order.equals("DELETE")){
+            outputMsg.writeObject("Deleted");
+        }
+        else{
+            outputMsg.writeObject("Unknown Order");
+        }
     }
 
     @Override
     public void run() {
         try {
             ObjectInputStream inputMsg = new ObjectInputStream(socket.getInputStream());
-            Map<String, String> message = (Map<String, String>) inputMsg.readObject();
-            ObjectOutputStream outputMsg = new ObjectOutputStream(socket.getOutputStream());
-            calender.putAll(message);
-            outputMsg.writeObject(calender.toString());
+            String order = (String) inputMsg.readObject();
+            getOrder(inputMsg,order);
 
-            Thread.sleep(160);
             PrintCalender printCalender = new PrintCalender(calender,setOfClients);
             printCalender.start();
+            Thread.sleep(160);
+            System.out.println(calender);
 
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();

@@ -21,7 +21,7 @@ public class ReceivedMessageClient implements Runnable {
                 System.out.println(message);
             }
         }catch (IOException | ClassNotFoundException e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 

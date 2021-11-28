@@ -33,14 +33,16 @@ public class Client {
                 ObjectOutputStream outputMsg = new ObjectOutputStream(socket.getOutputStream());
                 MessageToSend messageToSend = new MessageToSend();
 
-                messageToSend.createMessage();
-                outputMsg.writeObject(messageToSend.getMessage());
                 msgInputThread.start();
+                Thread.sleep(150);
+                messageToSend.createMessage();
+                outputMsg.writeObject(messageToSend.getOrder());
+                outputMsg.writeObject(messageToSend.getMessage());
 
-                System.out.println("rozloczyc sie???????? ");
-            } while (!loadWord().equals("tak"));
+                System.out.println("Disconnect?");
+            } while (!loadWord().equals("yes"));
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
