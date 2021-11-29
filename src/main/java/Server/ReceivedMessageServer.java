@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class ReceivedMessageServer implements Runnable {
@@ -23,10 +24,13 @@ public class ReceivedMessageServer implements Runnable {
         Map<String, String> message = (Map<String, String>) inputMsg.readObject();
         if(order.equals("ADD")){
             calender.putAll(message);
-            outputMsg.writeObject("Added");
+            outputMsg.writeObject("Add");
         }
         else if(order.equals("DELETE")){
+            Optional<String> key = message.keySet().stream().findFirst();
+            calender.put(key.get(), "free space");
             outputMsg.writeObject("Deleted");
+
         }
         else{
             outputMsg.writeObject("Unknown Order");
