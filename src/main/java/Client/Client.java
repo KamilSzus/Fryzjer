@@ -35,18 +35,21 @@ public class Client {
 
                 msgInputThread.start();
                 Thread.sleep(150);
-                messageToSend.createMessage();
-                outputMsg.writeObject(messageToSend.getOrder());
-                outputMsg.writeObject(messageToSend.getMessage());
-
+                try {
+                    messageToSend.createMessage();
+                    outputMsg.writeObject(messageToSend.getOrder());
+                    outputMsg.writeObject(messageToSend.getMessage());
+                } catch (WrongFormatDateException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("Disconnect?");
             } while (!loadWord().equals("yes"));
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-
     }
+
     private static String loadWord() {
         Scanner load = new Scanner(System.in);
         return load.nextLine();

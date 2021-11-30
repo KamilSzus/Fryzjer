@@ -22,12 +22,23 @@ public class ReceivedMessageServer implements Runnable {
     private void getOrder(ObjectInputStream inputMsg, String order) throws IOException, ClassNotFoundException {
         ObjectOutputStream outputMsg = new ObjectOutputStream(socket.getOutputStream());
         Map<String, String> message = (Map<String, String>) inputMsg.readObject();
+
         if(order.equals("ADD")){
-            calender.putAll(message);
-            outputMsg.writeObject("Add");
+            Optional<String> key = message.keySet()
+                    .stream()
+                    .findFirst();
+            if(calender.get(key.get()).equals("free space")){
+                calender.putAll(message);
+                outputMsg.writeObject("Add");
+            }
+            else{
+                outputMsg.writeObject("Deadline busy");
+            }
         }
-        else if(order.equals("DELETE")){
-            Optional<String> key = message.keySet().stream().findFirst();
+        else if(order.equals("DELETE")) {
+            Optional<String> key = message.keySet()
+                    .stream()
+                    .findFirst();
             calender.put(key.get(), "free space");
             outputMsg.writeObject("Deleted");
 
